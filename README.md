@@ -1,63 +1,39 @@
-﻿# GIT-35 - Merge Conflict Resolution
+﻿# GIT-35 – Merge Conflict Resolution
 
-## Objective
-This repository was created to deliberately trigger a merge conflict in Git
-and document, step by step, how it was resolved.
+cd "GIT-35" – moved into my project folder
+git init – turned the folder into a git repo
+git status – checked nothing was tracked yet
 
-## Tools Used
-- Windows PowerShell (all git commands were run here, no other terminal)
-- VS Code (used only to edit greeting.txt between git commands)
-- Git and GitHub
+git config user.email "annujjguptaa@gmail.com" – set my email so commits are tagged to me
+git add . – staged README.md and greeting.txt
+git commit -m "Initial commit" – first commit, just "Hello World" in greeting.txt
+git branch -M main – renamed the default branch to main
 
-## Steps and Commands
+git checkout -b feature-branch – made a new branch to edit the file separately
+git add greeting.txt – staged the edited file (rewrote it as an intro for "Anuj Gupta")
+git commit -m "Update greeting in feature-branch" – committed that version on feature-branch
 
-### 1. Initialise the repository
-cd "GIT-35"
-git init
-git status
+git checkout main – switched back to main
+git add greeting.txt – staged main's version of the same file (rewrote it as "Vidhrit" instead)
+git commit -m "Update greeting in main" – committed that version on main
 
-### 2. Configure identity and make the first commit
-git config user.email "annujjguptaa@gmail.com"
-git add .
-git commit -m "Initial commit"
-git branch -M main
+git merge feature-branch – tried merging feature-branch into main
 
-### 3. Create feature-branch and edit greeting.txt
-git checkout -b feature-branch
-git add greeting.txt
-git commit -m "Update greeting in feature-branch"
+## The conflict
+Both branches had changed the exact same line of greeting.txt, just to different text (main had the Vidhrit intro, feature-branch had the Anuj Gupta one), so git couldn't auto-merge it and threw a conflict on greeting.txt. Running git status showed it listed under "both modified". Opening the file showed git's conflict markers right inside it – <<<<<<< HEAD, then main's version, then =======, then feature-branch's version, then >>>>>>> feature-branch.
 
-### 4. Switch to main and edit the same line differently
-git checkout main
-git add greeting.txt
-git commit -m "Update greeting in main"
+## How I fixed it
+I opened greeting.txt in VS Code and deleted the marker lines by hand, then decided to just keep both intros instead of picking one – so the file now has the Vidhrit line followed by the Anuj Gupta lines. After that:
 
-### 5. Merge and trigger the conflict
-git merge feature-branch
-git status
+git add greeting.txt – marked the conflict as resolved
+git commit -m "Resolve merge conflict in greeting.txt" – finished the merge with a commit
 
-## The Conflict
-main had changed the first line of greeting.txt to a Vidhrit introduction,
-while feature-branch had changed the same line to an Anuj Gupta introduction.
-Git could not auto-merge these and inserted conflict markers
-(<<<<<<< HEAD, =======, >>>>>>> feature-branch) directly into greeting.txt.
+git log --oneline --graph --all – checked the history after, shows main and feature-branch splitting off and then joining back at the merge commit
 
-## Resolution
-The conflict markers were removed manually in VS Code and both introductions
-were kept, one after the other, instead of discarding either version.
-git add greeting.txt
-git commit -m "Resolve merge conflict in greeting.txt"
+git remote add origin https://github.com/annujjguptaa-cpu/GIT-35.git – linked the repo to GitHub
+git push -u origin main – pushed everything up
 
-### 6. Verify history
-git log --oneline --graph --all
+## Result
+greeting.txt has both introductions in it now, no conflict markers left, and the commit graph shows the full branch → edit → merge path clearly.
 
-### 7. Push to GitHub
-git remote add origin https://github.com/annujjguptaa-cpu/GIT-35.git
-git push -u origin main
-
-## Final Result
-greeting.txt now contains both introductions with no conflict markers left,
-and the commit graph shows main and feature-branch diverging and then
-joining back together at the merge commit.
-
-Repository: https://github.com/annujjguptaa-cpu/GIT-35
+Repo: https://github.com/annujjguptaa-cpu/GIT-35
